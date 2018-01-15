@@ -1,10 +1,318 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset='utf-8'>
-    <title>PLACEHOLDER</title>
+  <meta charset="utf-8">
+  <title>Malcolm's Data Visualizations template</title>
+  <link href="style.css" type="text/css" rel="stylesheet">
+  <!-- Load d3 -->
+  <script src="https://d3js.org/d3.v4.min.js"></script>
 </head>
 <body>
-  <h1> TEXT PLACEHOLDER </h1>
+  <header>
+    <h2>Fitzgerald Text Anaylsis:</h2>
+    <h3>Mahmoud Malcolm Essaid</h3>
+  </header>
+  <div id= "container"></div>
+  <aside id= 'des'>
+    <p>In this project, I attempt to do a simple anaylsis on how F. Scott Fitzgerald
+    changed his languange across his first three novels. The first graph is attempting to show
+    how often each of the four main characters are mentioned in each novel. As time passes, it can be seen
+    that Fitzgerald focuses less and less on a main protagnist. The second graph tracks the uses of salient
+    vocabulary, of my choice, across the novels. I chose words like Love, Heart, and Girl to track motifs of romance.
+    I chose the word white because Fitzgerald loves using colors as symbols. I chose words like Money and City to examine
+    class motifs.</p>
+  </aside>
+  <script src="datasets.js" type="text/javascript"></script>
+  <script>
+  const width = 316,
+  height = 200,
+  legWidth = 200,
+  legHeight = 150;
+  margin = {
+    top: 5,
+    bottom: 5,
+    left: 5,
+    right: 5,
+  };
+  d3.csv("http://localhost:8000/track_words_new", function(error, data) {
+
+
+var trackWordsData = data;
+
+
+ var lengthTSP = 102967;
+ var lengthTBD = 151556;
+ var lengthTGG = 59922;
+ var lengths = {'TSP':lengthTSP, 'TBD':lengthTBD, 'TGG': lengthTGG};
+
+  var ranges = {}
+
+  function setRanges(){
+    ranges['namesData'] = d3.extent(namesData, function(d){ return d[1]})
+    ranges['trackWordsData'] = [14, 103]
+  }
+
+  var scales = {}
+
+    setRanges();
+    var x = d3.scaleOrdinal()
+        .domain(['TSP', 'TBD', 'TGG'])
+        .range([margin.left, width/2, width - margin.right])
+    var y = d3.scaleLinear()
+        .domain(ranges['trackWordsData'])
+        .range([height - margin.bottom, margin.top])
+    var subArr = [x,y]
+    scales['trackWordsData'] = subArr;
+
+    var x = d3.scaleLinear()
+        .domain([0,12])
+        .range([margin.left, width - margin.right])
+    var y = d3.scaleLinear()
+        .domain(ranges['namesData'])
+        .range([height - margin.bottom, margin.top])
+    var subNames = [x,y]
+    scales['namesData'] = subNames;
+
+
+
+
+
+  var legend = d3.select('#container')
+    .append('svg')
+    .attr('width', legWidth)
+    .attr('height', legHeight)
+    .attr('id', 'legend')
+    .style('background-color', '#edd9c0')
+    .style("display", "inline-block")
+    .style('border', '1px solid black')
+    .style('position', 'fixed')
+
+  legend.append('text')
+    .text('Legend:')
+    .style('text-decoration','underline')
+    .attr('y', legHeight * 2/20)
+    .style('text-anchor', 'middle')
+    .attr('x', legWidth/2)
+
+
+  var keys = legend.append('g')
+  .attr("font-size", "11px");
+
+  keys.append('text')
+    .text("This Side of Paradise(TSP): ")
+    .attr('y', legHeight* 3/10)
+    .attr('x', 0)
+    .style('text-anchor', 'start')
+    .style('margin', '0')
+  keys.append('circle')
+      .attr('r', '6')
+      .attr('cx', legWidth  - 55)
+      .attr('cy', legHeight * 6 /20 - 3)
+      .style('fill', '#004C99')
+
+
+
+  keys.append('text')
+    .text("The Beautiful and Damned(TBD): ")
+    .attr('y', legHeight* 4/10)
+    .attr('x', 0)
+    .style('text-anchor', 'start')
+  keys.append('circle')
+      .attr('r', '6')
+      .attr('cx', legWidth  - 25)
+      .attr('cy', legHeight * 8 /20 - 3)
+      .style('fill', '#990000')
+
+
+  keys.append('text')
+    .text("The Great Gastby (TSP): ")
+    .attr('y', legHeight * 5/10)
+    .attr('x', 0)
+    .style('text-anchor', 'start')
+
+  keys.append('circle')
+      .attr('r', '6')
+      .attr('cx', legWidth  - 70)
+      .attr('cy', legHeight * 10/20 - 3)
+      .style('fill', '#00994C')
+
+  var svgNames = d3.select("#container")
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .attr('id', 'Names')
+    .style('margin', '2.5% 0% 2.5% 28%')
+    .style("background-color", "#edd9c0")
+    .style("display", "inline-block")
+    .style("overflow", "visible");
+
+  svgNames.append('text')
+    .text('Frequency of Major Character Names:')
+    .attr('x', 0)
+    .style('text-anchor', 'start')
+    .style('alignment-baseline', 'ideographic')
+    .style('text-decoration','underline');
+
+  var svgTrack = d3.select("#container")
+    .append("svg")
+    .attr("width", width)
+    .attr("height",height)
+    .style('margin', '2.5% 0% 2.5% 14%')
+    .attr('id', 'Track')
+    .style("display", "inline-block")
+    .style("background-color", "#edd9c0")
+    .style("overflow", "visible")
+    .style('border-left', 'solid black 1px');
+
+  svgTrack.append('text')
+    .text('Salient Vocabulary Across Novels:')
+    .attr('x', 0)
+    .style('text-anchor', 'start')
+    .style('alignment-baseline', 'ideographic')
+    .style('text-decoration','underline');
+
+    var specialY = d3.scaleOrdinal()
+      .domain(['Most Frequent', 'More Frequent', 'Less Frequent', "Least Frequent"])
+      .range([margin.top, height/3, 2*height/3, height - margin.bottom])
+    var y = scales['namesData'][1];
+    var x = scales['namesData'][0];
+    var specialX = scales['trackWordsData'][0];
+
+    svgNames.selectAll("rect")
+      .data(namesData)
+      .enter()
+      .append("rect")
+      .attr("y", function(d) {return y(d[1] / lengths[d[2]] * 100000)})
+      .attr("x", function(d,i){ return x(i)})
+      .attr('width', width / 17)
+      .attr('height', function(d) {return height - y(d[1] / lengths[d[2]] * 100000)} )
+      .style('z-index', '3')
+      .style('margin-left', '2')
+      .style('fill', function(d){
+        if (d[2] == 'TSP'){
+          return '#004C99';
+        }
+        if (d[2] == 'TBD'){
+          return '#990000';
+        }
+        else {
+          return '#00994C';
+        }
+      })
+      .style('zIndex', '3')
+      .on('mouseover', function(d){
+       d3.select('#legend').append('text')
+         .attr("font-size", "11px")
+         .text("Current: " + d[0].charAt(0).toUpperCase() + d[0].slice(1) + ", " + d[1] + ", " + d[2])
+         .attr('x', 0)
+         .attr('y', legHeight * 13/20)
+         .style('text-anchor', 'start')
+         .attr('class', 'identifier');
+       d3.select(this)
+       .transition()
+       .duration(50)
+       .attr("width", width/15);
+     })
+     .on('mouseout', function(d){
+       d3.select('.identifier')
+         .remove()
+       d3.select(this)
+         .transition()
+         .duration(250)
+         .attr('width', width/17)
+     })
+      svgNames.append("g")
+        .attr("transform", "translate(0," + (height)+ ")")
+        .call(d3.axisBottom(specialX));
+
+      svgNames.append("g")
+        .attr("transform", "translate(0, 0)")
+        .call(d3.axisLeft(specialY).ticks(3));
+
+
+  function drawTrackGraph() {
+    var x = scales['trackWordsData'][0];
+    var y = scales['trackWordsData'][1];
+    var specialScale = d3.scaleOrdinal()
+      .domain(['city', 'girl', 'heart', 'love', 'money', 'white'])
+      .range([y(14),y(88),y(30),y(83),y(33)-3,y(28) +5])
+    var group = svgTrack.selectAll("g")
+      .data(trackWordsData)
+      .enter()
+      .append("g")
+    group.append('circle')
+      .attr('cx', function(d){return x('TSP')})
+      .attr('cy', function(d) {return y(d.TSP / lengths['TSP'] * 100000)})
+      .attr('r', '4')
+      .attr('fill', '#004C99')
+      .attr('class', 'TSP');
+    group.append('circle')
+      .attr('cx', function(d){return x('TBD')})
+      .attr('cy', function(d) {return y(d.TBD / lengths['TBD'] * 100000)})
+      .attr('r', '4')
+      .attr('fill', '#990000')
+      .attr('class', 'TBD');
+    group.append('circle')
+      .attr('cx', function(d){return x('TGG')})
+      .attr('cy', function(d) {return y(d.TGG / lengths['TGG']  * 100000)})
+      .attr('r', '4')
+      .attr('fill', '#00994C')
+      .attr('class', 'TGG');
+
+
+    svgTrack.selectAll('g').append('line')
+      .attr("x1", x('TSP'))
+      .attr("y1", function(d){return y(d.TSP / lengths['TSP'] * 100000)})
+      .attr("x2", x('TBD'))
+      .attr("y2", function(d){return y(d.TBD / lengths['TBD'] * 100000)})
+      .attr("stroke-width", 1)
+      .style("stroke-dasharray", ("3, 3"))
+      .attr("stroke", "black");
+    group.append('line')
+      .attr("x1", x('TBD'))
+      .attr("y1", function(d){return y(d.TBD / lengths['TBD'] * 100000)})
+      .attr("x2", x('TGG'))
+      .attr("y2", function(d){return y(d.TGG / lengths['TGG'] * 100000)})
+      .attr("stroke-width", 1)
+      .style("stroke-dasharray", ("3, 3"))
+      .attr("stroke", "black");
+
+
+    group.selectAll('circle')
+    .on('mouseover', function(d){
+      var temp = d3.select(this).attr('class');
+     d3.select('#legend').append('text')
+       .attr("font-size", "11px")
+       .text("Current: " + d['0'] + ", " + d[temp] + ", " + temp)
+       .attr('x', 0)
+       .attr('y', legHeight * 13/20)
+       .style('text-anchor', 'start')
+       .attr('class', 'identifier');
+     d3.select(this)
+     .transition()
+     .duration(50)
+     .attr("r", 6);
+   })
+   .on('mouseout', function(d){
+     d3.select('.identifier')
+       .remove()
+     d3.select(this)
+       .transition()
+       .duration(250)
+       .attr('r', '4')
+   })
+      svgTrack.append("g")
+        .attr("transform", "translate(0," + (height)+ ")")
+        .call(d3.axisBottom(x).ticks(5));
+
+      svgTrack.append("g")
+        .attr("transform", "translate(0, 0)")
+        .call(d3.axisLeft(specialScale).tickSize(2));
+  }
+  drawTrackGraph()
+});
+  </script>
+
+
 </body>
 </html>

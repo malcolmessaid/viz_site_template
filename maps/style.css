@@ -1,0 +1,93 @@
+body {
+  font-family: sans-serif;
+}
+
+header {
+  text-align: left;
+  display: block;
+}
+header h1 {
+  margin-bottom: 0;
+}
+header h3 {
+  margin-top: 0;
+}
+
+#container {
+  width: 750px;
+  margin: 0 auto;
+  border-style: solid;
+  border-color: black;
+  border-width: thin;
+}
+aside {
+  width: 15%;
+  float: left;
+  padding-bottom: 15px;
+  border-style: double;
+  border-color: black;
+  background-color: #FFF0F5;
+}
+#slidecontainer {
+  width: 100%;
+}
+#myRange {
+  margin-left: 15%;
+}
+.text{
+  font-family: sans-serif;
+  text-align: center;
+  margin: 0 auto;
+}
+body {
+  background-color: #FFFAF0;
+}
+#des{
+  font-size: 11px;
+  padding-top: 15px;
+  width: 600px;
+}
+#graphYear {
+  position: absolute;
+  margin-left: 200px;
+  margin-top: 12px;
+  padding: 4px;
+}
+.country {
+  position: absolute;
+  opacity: .75;
+}
+#Egypt {
+  margin-top: 350px;
+  margin-left: 100px;
+}
+#Syria {
+  margin-left: 650px;
+  margin-top: 50px;
+}
+#Jordan {
+  margin-left: 575px;
+  margin-top: 225px;
+}
+#Israel {
+  margin-top: 50px;
+  margin-left: 460px;
+}
+#Lebanon{
+  margin-top: 6px;
+  margin-left: 465px;
+}
+#Palestine{
+  margin-left: 440px;
+  margin-top: 200px;
+}
+#link {
+  float: left;
+  opacity: .25;
+  font-size: 8px;
+}
+
+#legend {
+  float: right;
+  border: double;
+}

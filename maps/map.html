@@ -1,0 +1,151 @@
+<!-- Malcolm Essaid -->
+<!-- http://peacenow.org.il/en/settlements-watch/israeli-settlements-at-the-west-bank-the-list -->
+<!-- https://bl.ocks.org/mbostock/3711652 -->
+<!-- https://www.w3schools.com/howto/howto_js_rangeslider.asp -->
+<!-- https://geojson-maps.ash.ms/ -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Settlement Expansion in the West Bank</title>
+     <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+  </head>
+  <body>
+    <header class="text">
+      <h1>Settlement Expansion in the West Bank</h1>
+      <h3>A Project by Mahmoud Malcolm Essaid</h3>
+    </header>
+    <aside id="cntrl">
+      <div id="slidecontainer">
+        <p class= "text" id = "asideYear">Year: 1967</p>
+        <input type="range" min="1967" max="2006" value="1967" class="slider" id="myRange">
+        <p class = 'text'>Select the year above.</p>
+      </div>
+    </aside>
+    <div id = "legend"></div>
+    <div id= "container">
+      <h2 class = 'year' id = "graphYear">1967</h2>
+      <h3 class = "country" id = 'Egypt' >Egypt</h3>
+      <h3 class = "country" id = 'Jordan'>Jordan</h3>
+      <h3 class = "country" id = 'Israel'>Israel</h3>
+      <h3 class = "country" id = 'Syria'>Syria</h3>
+      <h6 class = "country" id = 'Lebanon'>Lebanon</h6>
+      <h5 class = 'country' id = "Palestine">West Bank</h5>
+    </div>
+    <p class= "text" id= "des">
+      This graphic is meant to show the yearly expansion of settlements in the West Bank.
+      The data begins with 1967 because that is the year that Israel occpuied the West Bank.
+      In that time, Isaeli settlements have expanded throughout the West Bank. Since 1967, the population of
+      settlers have increased from 0 to 400,000, and 229 settlements have been build.
+      Each red circle represents one new settlement build in the year listed.
+    </p>
+    <p id = 'link'>http://peacenow.org.il/en/settlements-watch/israeli-settlements-at-the-west-bank-the-list</p>
+    <script>
+    const width = 750,
+    height = 400;
+    margin = {
+      top: 10,
+      bottom: 75,
+      left: 75,
+      right: 10,
+    };
+    var year = 1967;
+    var dataYears = [];
+
+    var svg = d3.select("#container")
+      .append("svg")
+      .attr("width", width)
+      .attr("height",height)
+      .style("background-color", "#F0F8FF")
+      .style("margin", "0 auto")
+      .style("display", "block")
+
+    d3.json("http://localhost:8000/countries.geo.json", function(error, dataset){
+
+      var projection = d3.geoMercator().scale(7500).center([34.5, 32]).translate([width / 2, height / 2]);
+      var path = d3.geoPath().projection(projection);
+
+      var countries = svg.selectAll("path")
+        .data(dataset.features)
+        .enter()
+        .append("path")
+        .attr("d" , path)
+        .attr("stroke", "black")
+        .style('fill', "#FAEBD7")
+        .style("magrin", "0 auto")
+
+
+  d3.csv("http://localhost:8000/nowpeace-settlements.csv", function(error, settleData){
+
+    settleData.forEach(function(d){
+      d.establishment = +d.establishment;
+      d.latitude = +d.latitude;
+      d.longitude = +d.longitude;
+    });
+
+      function updateGraph(year){
+        var temp = [];
+        settleData.forEach(function(d){
+          if (d.establishment <= year){
+            temp.push(d)
+          }
+        });
+        svg.selectAll("circle")
+          .remove()
+        svg.selectAll("circle")
+          .data(temp)
+          .enter()
+          .append('circle')
+          .attr("cx", function(d) {return projection([d.longitude, d.latitude])[0]})
+          .attr("cy", function(d) {return projection([d.longitude, d.latitude])[1]})
+          .attr("r", "2")
+          .style("fill", 'red')
+          .style('opacity', ".5")
+          .append("svg:title")
+              .text(function(d){return (d.name + ", " + d.establishment)});
+        }
+
+        document.getElementById('myRange').addEventListener('input', function(){
+          d3.selectAll("#Palestine")
+            .transition()
+            .duration(200)
+            .style('opacity','0.0')
+            .remove();
+          document.getElementById('asideYear').innerHTML = "Year: " + document.getElementById('myRange').value;
+          document.getElementById('graphYear').innerHTML = document.getElementById('myRange').value;
+          year = document.getElementById('myRange').value;
+          updateGraph(year);
+
+        })
+        var svgLeg = d3.select("#legend")
+            .append('svg')
+            .attr("width", "150")
+            .attr("height","75")
+            .style("background-color", "#FFF0F5")
+            .style("margin", "0 auto")
+            .style("display", "block");
+
+        svgLeg.append('text')
+          .text('Legend')
+          .attr('x', '49')
+          .attr('y', '15')
+          .style('text-decoration','underline');
+
+        svgLeg.append('text')
+          .text(': Settlement')
+          .attr('x', '35')
+          .attr('y', '41')
+          .style('font-size','12');
+
+        svgLeg.append('circle')
+            .attr("r", "5")
+            .style("fill", 'red')
+            .style('opacity', ".5")
+            .attr('cx', '25')
+            .attr('cy', '37.5');
+  });
+});
+    </script>
+  </body>
+</html>

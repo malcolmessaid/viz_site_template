@@ -1,0 +1,21 @@
+body {
+  font-family:Garamond, Georgia, serif;
+  background-color: #c5d5cb;
+}
+header{
+  margin: 0 auto;
+  width: 35%;
+  text-align: center;
+}
+header h2 {
+  margin: 0
+}
+header h3{
+  margin-top: 0;
+}
+#des p{
+  font-size: 11px;
+  width: 50%;
+  text-align: center;
+  margin-left: 35%;
+}
